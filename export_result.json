@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-04-15T22:13:16.035393",
+  "status": "success",
+  "modules": [
+    "linear_router",
+    "reporter",
+    "exporter"
+  ],
+  "message": "\u0414\u0430\u043d\u043d\u044b\u0435 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u044d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u044b"
+}

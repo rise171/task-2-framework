@@ -1,0 +1,12 @@
+# Конфигурация модулей для запуска
+modules:
+  - linear_router    # Можно заменить на trie_router
+  - reporter
+  - exporter
+  - benchmark        # Запустит бенчмарк после инициализации
+
+# Дополнительные настройки
+settings:
+  benchmark_requests: 3000
+  benchmark_route_sizes: [100, 1000, 5000]
+  export_format: "json"

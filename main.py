@@ -1,35 +1,101 @@
-from linear_router import LinearRouter
-from trie_router import TrieRouter
-from generator import generate_routes, generate_ips
-from benchmark import benchmark, get_stats
+#!/usr/bin/env python3
+"""
+Мини веб служба и конвейер обработки запросов
+Модульная архитектура с DI контейнером
+"""
 
-def run():
-    sizes = [100, 1000, 5000]
-    requests = 3000
+import sys
+import argparse
+from pathlib import Path
 
-    for size in sizes:
-        print(f"\n=== ROUTES: {size} ===")
+# Добавляем текущую директорию в путь
+sys.path.insert(0, str(Path(__file__).parent))
 
-        routes = generate_routes(size)
-        ips = generate_ips(requests)
+from core.container import DIContainer
+from core.module_manager import ModuleManager
+from core.exception import ModuleNotFoundError, CircularDependencyError, VersionMismatchError
 
-        # Linear
-        linear = LinearRouter()
-        for r in routes:
-            linear.add_route(r)
+def print_banner():
+    """Печатает баннер приложения"""
+    print("""
+    ╔══════════════════════════════════════════════════════════════╗
+    ║     МИНИ ВЕБ СЛУЖБА И КОНВЕЙЕР ОБРАБОТКИ ЗАПРОСОВ            ║
+    ║     Модульная архитектура с DI контейнером                   ║
+    ║     Версия: 1.0                                              ║
+    ╚══════════════════════════════════════════════════════════════╝
+    """)
 
-        linear_stats = get_stats(benchmark(linear, ips))
+def run_framework(config_path: str, modules_dir: str = "modules"):
+    """
+    Запускает фреймворк с указанной конфигурацией
+    """
+    print_banner()
+    
+    # Создаём DI контейнер
+    container = DIContainer()
+    
+    # Создаём менеджер модулей
+    module_manager = ModuleManager(container, modules_dir)
+    
+    try:
+        # Загружаем модули из конфигурации
+        print(f"\n📦 Загрузка модулей из конфигурации: {config_path}")
+        module_manager.load_from_config(config_path)
+        
+        # Дополнительно загружаем модули из директории
+        print(f"📁 Поиск модулей в директории: {modules_dir}")
+        module_manager.load_from_directory(modules_dir)
+        
+        # Выводим загруженные модули
+        print(f"\n✅ Загружено модулей: {len(module_manager.modules)}")
+        for name, module in module_manager.modules.items():
+            print(f"   - {name} v{module.info.version} (требует: {module.requires})")
+        
+        # Определяем порядок запуска
+        print(f"\n🔍 Определение порядка запуска...")
+        order = module_manager.resolve_order()
+        print(f"   Порядок: {' -> '.join(order)}")
+        
+        # Регистрируем службы
+        print(f"\n🔧 Регистрация служб в DI контейнере...")
+        module_manager.register_all_services()
+        
+        # Инициализируем модули
+        print(f"\n🚀 Инициализация модулей...")
+        module_manager.init_all_modules()
+        
+        print(f"\n✨ Фреймворк успешно запущен!")
+        
+    except ModuleNotFoundError as e:
+        print(f"\n❌ ОШИБКА: {e}")
+        sys.exit(1)
+    except CircularDependencyError as e:
+        print(f"\n❌ ОШИБКА: {e}")
+        sys.exit(1)
+    except VersionMismatchError as e:
+        print(f"\n❌ ОШИБКА: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n❌ НЕОЖИДАННАЯ ОШИБКА: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
-        # Trie
-        trie = TrieRouter()
-        for r in routes:
-            trie.add_route(r)
-
-        trie_stats = get_stats(benchmark(trie, ips))
-
-        print("Linear:", linear_stats)
-        print("Trie  :", trie_stats)
-
+def main():
+    parser = argparse.ArgumentParser(description="Модульный фреймворк с DI контейнером")
+    parser.add_argument(
+        "--config", "-c",
+        default="config.yaml",
+        help="Путь к конфигурационному файлу (по умолчанию: config.yaml)"
+    )
+    parser.add_argument(
+        "--modules-dir", "-m",
+        default="modules",
+        help="Директория с модулями (по умолчанию: modules)"
+    )
+    
+    args = parser.parse_args()
+    run_framework(args.config, args.modules_dir)
 
 if __name__ == "__main__":
-    run()
+    main()
