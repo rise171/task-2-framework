@@ -4,10 +4,6 @@ from threading import Lock
 T = TypeVar('T')
 
 class DIContainer:
-    """
-    Контейнер внедрения зависимостей.
-    Поддерживает синглтоны, транзиентные зависимости и фабрики.
-    """
     
     def __init__(self):
         self._singletons: Dict[Type, Any] = {}

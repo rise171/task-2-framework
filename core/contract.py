@@ -42,7 +42,7 @@ class Module(ABC):
     @abstractmethod
     def register_services(self, container: 'DIContainer') -> None:
         """
-        Шаг 1: Регистрация служб в контейнере DI.
+        1: Регистрация служб в контейнере DI.
         Здесь модуль регистрирует свои классы, фабрики, синглтоны.
         """
         pass
@@ -50,14 +50,14 @@ class Module(ABC):
     @abstractmethod
     def init(self, container: 'DIContainer') -> None:
         """
-        Шаг 2: Инициализация модуля.
+        2: Инициализация модуля.
         Здесь модуль получает зависимости из контейнера и выполняет инициализацию.
         """
         pass
     
     def start(self, container: 'DIContainer') -> None:
         """
-        Опциональный шаг 3: Запуск модуля.
+        3: Запуск модуля.
         Для модулей, которым нужен отдельный поток или сервер.
         """
         pass

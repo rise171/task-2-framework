@@ -1,0 +1,78 @@
+{
+  "timestamp": "2026-04-16T15:00:33.738845",
+  "stats": {
+    "uptime_seconds": 0.01,
+    "total_lookups": 4,
+    "valid_ips": 4,
+    "invalid_ips": 0,
+    "private_ips": 3,
+    "public_ips": 1,
+    "routes_found": 4,
+    "routes_not_found": 0,
+    "avg_lookup_time_us": 2.5,
+    "success_rate": 100.0,
+    "log_size": 4
+  },
+  "last_100_logs": [
+    {
+      "timestamp": "2026-04-16T15:00:33.735830",
+      "ip": "10.0.0.1",
+      "route_found": true,
+      "lookup_time_us": 2.5,
+      "validation": {
+        "ip": "10.0.0.1",
+        "is_valid": true,
+        "is_private": true,
+        "is_loopback": false,
+        "is_multicast": false,
+        "version": 4,
+        "error": null
+      }
+    },
+    {
+      "timestamp": "2026-04-16T15:00:33.735830",
+      "ip": "192.168.1.5",
+      "route_found": true,
+      "lookup_time_us": 2.5,
+      "validation": {
+        "ip": "192.168.1.5",
+        "is_valid": true,
+        "is_private": true,
+        "is_loopback": false,
+        "is_multicast": false,
+        "version": 4,
+        "error": null
+      }
+    },
+    {
+      "timestamp": "2026-04-16T15:00:33.735830",
+      "ip": "8.8.4.4",
+      "route_found": true,
+      "lookup_time_us": 2.5,
+      "validation": {
+        "ip": "8.8.4.4",
+        "is_valid": true,
+        "is_private": false,
+        "is_loopback": false,
+        "is_multicast": false,
+        "version": 4,
+        "error": null
+      }
+    },
+    {
+      "timestamp": "2026-04-16T15:00:33.735830",
+      "ip": "172.16.0.1",
+      "route_found": true,
+      "lookup_time_us": 2.5,
+      "validation": {
+        "ip": "172.16.0.1",
+        "is_valid": true,
+        "is_private": true,
+        "is_loopback": false,
+        "is_multicast": false,
+        "version": 4,
+        "error": null
+      }
+    }
+  ]
+}

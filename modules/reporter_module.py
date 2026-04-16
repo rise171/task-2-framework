@@ -1,42 +1,18 @@
 import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pathlib import Path
+from datetime import datetime
+
+# Добавляем корневую директорию в путь для абсолютного импорта
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.contract import Module, ModuleInfo
 from core.container import DIContainer
-from datetime import datetime
 
-class ReporterModule(Module):
-    """Модуль для формирования отчётов о маршрутизации"""
-    
-    @property
-    def info(self) -> ModuleInfo:
-        return ModuleInfo(
-            name="reporter",
-            version="1.0.0",
-            contract_version="1.0",
-            description="Модуль формирования отчётов"
-        )
-    
-    @property
-    def requires(self) -> list:
-        return ["linear_router"]  # Зависит от любого маршрутизатора
-    
-    def register_services(self, container: DIContainer) -> None:
-        """Регистрирует сервис отчётности"""
-        container.register_singleton(Reporter, Reporter())
-        print("  [ReporterModule] Зарегистрирован Reporter как синглтон")
-    
-    def init(self, container: DIContainer) -> None:
-        """Инициализирует отчётность"""
-        reporter = container.get(Reporter)
-        reporter.generate_report()
-        print("  [ReporterModule] Отчёт сгенерирован")
 
 class Reporter:
-    """Сервис для генерации отчётов"""
+    """Сервис формирования отчётов"""
     
-    def generate_report(self) -> str:
+    def generate_report(self):
         report = f"""
         ========================================
         ОТЧЁТ О МАРШРУТИЗАЦИИ
@@ -50,3 +26,31 @@ class Reporter:
         """
         print(report)
         return report
+
+
+class ReporterModule(Module):
+    """Модуль формирования отчётов"""
+    
+    @property
+    def info(self) -> ModuleInfo:
+        return ModuleInfo(
+            name="reporter",
+            version="1.0.0",
+            contract_version="1.0",
+            description="Модуль формирования отчётов"
+        )
+    
+    @property
+    def requires(self) -> list:
+        return ["linear_router"]
+    
+    def register_services(self, container: DIContainer) -> None:
+        """Регистрация сервиса Reporter"""
+        container.register_singleton(Reporter, Reporter())
+        print("  [ReporterModule] Зарегистрирован Reporter")
+    
+    def init(self, container: DIContainer) -> None:
+        """Инициализация модуля - генерация отчёта"""
+        reporter = container.get(Reporter)
+        reporter.generate_report()
+        print("  [ReporterModule] Отчёт сгенерирован")

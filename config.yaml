@@ -1,12 +1,36 @@
-# Конфигурация модулей для запуска
+# КОНФИГУРАЦИЯ МОДУЛЬНОГО ФРЕЙМВОРКА
+# Список модулей для загрузки (порядок не важен - определится автоматически)
 modules:
-  - linear_router    # Можно заменить на trie_router
-  - reporter
-  - exporter
-  - benchmark        # Запустит бенчмарк после инициализации
+  # === МАРШРУТИЗАТОРЫ (алгоритмы) ===
+  - router_linear_module           # Линейный маршрутизатор O(N)
+  - router_trie_module             # Trie-маршрутизатор O(32)
+  - router_distance_vector_module         # Distance Vector маршрутизатор (Беллман-Форд)
+  
+  # === СЕРВИСНЫЕ МОДУЛИ ===
+  - reporter_module                # Формирование отчётов
+  - exporter_module                # Экспорт данных в JSON
+  - logger_modules                  # Валидация IP и журналирование
 
-# Дополнительные настройки
-settings:
-  benchmark_requests: 3000
-  benchmark_route_sizes: [100, 1000, 5000]
-  export_format: "json"
+# Настройки бенчмарка
+benchmark:
+  enabled: true
+  route_sizes: [100, 1000, 5000]
+  requests: 3000
+  iterations: 3
+
+# Настройки экспорта
+export:
+  format: json
+  output_dir: "./results"
+  filename: "export_result.json"
+
+# Настройки логирования
+logging:
+  enabled: true
+  log_file: "validation_logs.json"
+  max_log_entries: 1000
+
+# Настройки отчётности
+reporting:
+  verbose: true
+  show_stats: true
