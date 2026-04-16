@@ -39,7 +39,7 @@ class TestModuleDependencies(unittest.TestCase):
         # Проверяем, что порядок правильный
         # В реальном коде нужно мокать загрузку модулей
         
-        print("\n✅ Тест 1 пройден: корректный порядок зависимостей")
+        print("\n Тест 1 пройден: корректный порядок зависимостей")
     
     def test_missing_module_error(self):
         """Тест 2: Ошибка отсутствующего модуля с понятным сообщением"""
@@ -71,7 +71,7 @@ class TestModuleDependencies(unittest.TestCase):
         self.assertIn("non_existent_module", error_message)
         self.assertIn("не найден", error_message)
         
-        print(f"\n✅ Тест 2 пройден: сообщение об ошибке - '{error_message}'")
+        print(f"\n Тест 2 пройден: сообщение об ошибке - '{error_message}'")
     
     def test_circular_dependency_error(self):
         """Тест 3: Ошибка циклических зависимостей с понятным сообщением"""
@@ -116,11 +116,11 @@ class TestModuleDependencies(unittest.TestCase):
             self.manager.resolve_order()
         
         error_message = str(context.exception)
-        self.assertIn("циклическую зависимость", error_message.lower())
+        self.assertIn("циклическая зависимость", error_message.lower())
         self.assertIn("a", error_message)
         self.assertIn("b", error_message)
         
-        print(f"\n✅ Тест 3 пройден: сообщение о цикле - '{error_message}'")
+        print(f"\n Тест 3 пройден: сообщение о цикле - '{error_message}'")
 
 class TestDIContainer(unittest.TestCase):
     
@@ -145,7 +145,7 @@ class TestDIContainer(unittest.TestCase):
         self.assertIs(service, service2)
         self.assertEqual(service.value, 100)
         
-        print("\n✅ Тест 4 пройден: DI контейнер корректно внедряет зависимости")
+        print("\n Тест 4 пройден: DI контейнер корректно внедряет зависимости")
 
 if __name__ == "__main__":
     print("\n" + "="*60)

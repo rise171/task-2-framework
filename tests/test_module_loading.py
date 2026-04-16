@@ -16,7 +16,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from core.container import DIContainer
 from core.module_manager import ModuleManager
 from core.contract import Module, ModuleInfo
-from core.exceptions import ModuleNotFoundError, CircularDependencyError
+from core.exception import ModuleNotFoundError, CircularDependencyError, VersionMismatchError
+
 
 class TestModuleLoading(unittest.TestCase):
     
@@ -38,7 +39,9 @@ class TestModuleLoading(unittest.TestCase):
         
         module_content = f'''
 import sys
-sys.path.append(str(Path(__file__).parent.parent))
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.contract import Module, ModuleInfo
 
@@ -62,7 +65,8 @@ class {module_name.capitalize()}Module(Module):
         print(f"  Инициализация {{self.info.name}}")
 '''
         
-        module_file = self.modules_dir / f"{module_name}_module.py"
+        # Создаём файл модуля (без суффикса _module)
+        module_file = self.modules_dir / f"{module_name}.py"
         with open(module_file, 'w', encoding='utf-8') as f:
             f.write(module_content)
         
@@ -88,7 +92,7 @@ class {module_name.capitalize()}Module(Module):
         self.assertIn("test_b", manager.modules)
         self.assertEqual(len(manager.modules), 2)
         
-        print(f"\n✅ Тест 1 пройден: загружено {len(manager.modules)} модулей из директории")
+        print(f"\n Тест 1 пройден: загружено {len(manager.modules)} модулей из директории")
     
     def test_load_modules_with_dependencies(self):
         """Тест 2: Загрузка модулей с зависимостями"""
@@ -106,7 +110,7 @@ class {module_name.capitalize()}Module(Module):
         # Проверяем зависимости
         self.assertEqual(manager.modules["dependent"].requires, ["base"])
         
-        print(f"\n✅ Тест 2 пройден: модули с зависимостями загружены корректно")
+        print(f"\n Тест 2 пройден: модули с зависимостями загружены корректно")
     
     def test_load_nonexistent_module_error(self):
         """Тест 3: Ошибка при загрузке несуществующего модуля"""
@@ -120,7 +124,7 @@ class {module_name.capitalize()}Module(Module):
         try:
             with self.assertRaises(Exception):  # Должна быть ошибка импорта
                 manager.load_from_config(config_path)
-            print(f"\n✅ Тест 3 пройден: ошибка при загрузке несуществующего модуля")
+            print(f"\n Тест 3 пройден: ошибка при загрузке несуществующего модуля")
         finally:
             os.unlink(config_path)
     
@@ -142,7 +146,7 @@ class {module_name.capitalize()}Module(Module):
         error_message = str(context.exception)
         self.assertIn("missing_module", error_message)
         
-        print(f"\n✅ Тест 4 пройден: обнаружена отсутствующая зависимость - '{error_message}'")
+        print(f"\n Тест 4 пройден: обнаружена отсутствующая зависимость - '{error_message}'")
     
     def test_load_module_with_circular_dependency(self):
         """Тест 5: Модули с циклическими зависимостями"""
@@ -158,9 +162,9 @@ class {module_name.capitalize()}Module(Module):
             manager.resolve_order()
         
         error_message = str(context.exception)
-        self.assertIn("циклическую", error_message.lower())
+        self.assertIn("циклическая", error_message.lower())
         
-        print(f"\n✅ Тест 5 пройден: обнаружена циклическая зависимость - '{error_message}'")
+        print(f"\n Тест 5 пройден: обнаружена циклическая зависимость - '{error_message}'")
     
     def test_load_modules_from_config(self):
         """Тест 6: Загрузка модулей из конфигурационного файла"""
@@ -181,7 +185,7 @@ class {module_name.capitalize()}Module(Module):
             self.assertIn("config_test_a", manager.modules)
             self.assertIn("config_test_b", manager.modules)
             
-            print(f"\n✅ Тест 6 пройден: загружено {len(manager.modules)} модулей из конфига")
+            print(f"\n Тест 6 пройден: загружено {len(manager.modules)} модулей из конфига")
         finally:
             os.unlink(config_path)
     
@@ -207,9 +211,10 @@ class {module_name.capitalize()}Module(Module):
             self.assertIn("from_dir", manager.modules)
             self.assertIn("from_config", manager.modules)
             
-            print(f"\n✅ Тест 7 пройден: загрузка из обоих источников")
+            print(f"\n Тест 7 пройден: загрузка из обоих источников")
         finally:
             os.unlink(config_path)
+
 
 class TestModuleVersionCheck(unittest.TestCase):
     
@@ -226,7 +231,9 @@ class TestModuleVersionCheck(unittest.TestCase):
         """Создаёт модуль с указанной версией контракта"""
         module_content = f'''
 import sys
-sys.path.append(str(Path(__file__).parent.parent))
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from core.contract import Module, ModuleInfo
 
@@ -249,7 +256,7 @@ class {module_name.capitalize()}Module(Module):
     def init(self, container):
         pass
 '''
-        module_file = self.modules_dir / f"{module_name}_module.py"
+        module_file = self.modules_dir / f"{module_name}.py"
         with open(module_file, 'w', encoding='utf-8') as f:
             f.write(module_content)
         
@@ -259,7 +266,7 @@ class {module_name.capitalize()}Module(Module):
     
     def test_version_compatibility(self):
         """Тест 8: Проверка совместимости версий"""
-        from core.exceptions import VersionMismatchError
+        from core.exception import VersionMismatchError
         
         # Создаём модуль с несовместимой версией
         self.create_module_with_version("incompatible", "2.0")
@@ -273,7 +280,8 @@ class {module_name.capitalize()}Module(Module):
         error_message = str(context.exception)
         self.assertIn("версию", error_message)
         
-        print(f"\n✅ Тест 8 пройден: проверка версий - '{error_message}'")
+        print(f"\n Тест 8 пройден: проверка версий - '{error_message}'")
+
 
 if __name__ == "__main__":
     print("\n" + "="*60)
